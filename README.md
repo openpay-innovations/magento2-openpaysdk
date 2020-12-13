@@ -1,2 +1,2 @@
-# Magento2 Openpay SDK
-Repository for the Magento 2 Openpay SDK
+# Magento 2 Openpay SDK
+Magento 2 Openpay Plugin SDK
