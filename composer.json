@@ -9,6 +9,7 @@
     ],
     "homepage": "http://swagger.io",
     "license": "proprietary",
+    "minimum-stability": "stable",
     "authors": [
         {
             "name": "Swagger and contributors",
