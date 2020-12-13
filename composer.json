@@ -1,7 +1,6 @@
 {
     "name": "ideatarmac/openpay",
-    "version": "1.0.0",
-    "description": "Library for openpay payment method",
+    "description": "Library for Openpay payment method",
     "keywords": [
         "swagger",
         "php",
@@ -9,7 +8,7 @@
         "api"
     ],
     "homepage": "http://swagger.io",
-    "license": "MIT",
+    "license": "proprietary",
     "authors": [
         {
             "name": "Swagger and contributors",
