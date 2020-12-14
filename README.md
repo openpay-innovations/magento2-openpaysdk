@@ -3,7 +3,7 @@
 Introduction
 ---------
 
-Developed the SDK for the Openpay Payment Plugin.
+This is the SDK for the [Openpay Payment Plugin](https://packagist.org/packages/opy/module-payment).
 
 ### What is Magento Payment Extension?
 
@@ -49,9 +49,8 @@ composer installed.
 Once composer is installed, execute the following command in your project root to install this library:
 
 ```sh
-composer require opy/module-payment
+composer require ideatarmac/openpay
 ```
-
 
 Using server SSH Access, please go to project root folder and run the following commands to ensure the configuration tasks are run, database schema is updated and Magento's cache is cleared.
 
@@ -62,6 +61,7 @@ Using server SSH Access, please go to project root folder and run the following 
 - php bin/magento cache:flush
 
 Or, you can do it manually from the admin by following the path: `System` > `Tools` > `Cache Management` and then clicking on the `Flush Magento Cache` button.
+
 
 Configuration
 ---------
