@@ -376,10 +376,11 @@ class PaymentManager
      */
     private function loadHostFromConfig($backofficeparams)
     {
+        $region = $backofficeparams['region'];
         if ($backofficeparams['payment_mode'] == 'live') {
-            $host = INIController::fetchKey(Constants::CONFIG_FILE, 'Host', 'liveurl');
+            $host = INIController::fetchKey(Constants::CONFIG_FILE, 'Host', 'liveurl' . $region);
         } else {
-            $host = INIController::fetchKey(Constants::CONFIG_FILE, 'Host', 'testurl');
+            $host = INIController::fetchKey(Constants::CONFIG_FILE, 'Host', 'testurl' . $region);
         }
         return ($host) ? $host : null;
         //return ($backofficeparams !== null && $host) ? $backofficeparams[$host] : null;
@@ -490,10 +491,11 @@ class PaymentManager
 
     private function setRedirectUrlInShopdata()
     {
+        $region = $this->shopData->backofficeConfigparam['region'];
         if ($this->shopData->backofficeConfigparam['payment_mode'] == 'live') {
-            $url = INIController::fetchKey(Constants::CONFIG_FILE, 'HandoverUrl', 'liveurl');
+            $url = INIController::fetchKey(Constants::CONFIG_FILE, 'HandoverUrl', 'liveurl' . $region);
         } else {
-            $url = INIController::fetchKey(Constants::CONFIG_FILE, 'HandoverUrl', 'testurl');
+            $url = INIController::fetchKey(Constants::CONFIG_FILE, 'HandoverUrl', 'testurl' . $region);
         }
         $this->shopData->backofficeConfigparam['handover_url'] = ($url) ? $url : null;
     }
