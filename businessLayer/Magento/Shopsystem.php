@@ -19,7 +19,8 @@ class Shopsystem
      * @return object
      */
     public static function prepareShopCartObj($cart)
-    {  $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    { 
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $currencysymbol = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
         $currency = $currencysymbol->getStore()->getCurrentCurrencyCode();
         $customer = $objectManager->create('Magento\Customer\Model\Customer');
@@ -51,8 +52,36 @@ class Shopsystem
         $cart->total = $cart->getGrandTotal();
         $integerTotal = round((float)$cart->getGrandTotal(), 2);
         $cart->integerTotal = (int)($integerTotal * 100);
+
         $cart->deliveryAddress = $cart->getShippingAddress()->getData();
         $cart->invoiceAddress = $cart->getBillingAddress()->getData();
+
+        // Get shipping address and billing address different or not
+        $billingAddress = array_diff($cart->invoiceAddress, $cart->deliveryAddress);
+        if (array_key_exists('firstname', $billingAddress) && array_key_exists('lastname', $billingAddress)) {
+            $cart->deliveryAddress['firstname'] = $billingAddress['firstname'];
+            $cart->deliveryAddress['lastname'] = $billingAddress['lastname'];
+        }
+
+        /**
+         * This code is for onestepcheckout (START)
+         */
+        $request = $objectManager->get('Magento\Framework\App\RequestInterface');
+        $moduleManager = $objectManager->get('Magento\Framework\Module\Manager');
+        $isOnestepInstalled = $moduleManager->isEnabled('Onestepcheckout_Iosc');
+        if ($isOnestepInstalled) {
+            $dataManager = $objectManager->get('Onestepcheckout\Iosc\Model\DataManager');
+            $content = $request->getContent();
+            $payload = $dataManager->deserializeJsonPost($content);
+            $data = $dataManager->process($payload);
+            if ($data && !$data['error']) {
+                if (!$data['data']['billingAddress']) {
+                    $cart->invoiceAddress =$data['data']['shippingAddress'];
+                }
+            }
+        }
+        /** (END) */
+
         $cart->isoCurrency = $currency;
         $cart->cartId = $cart->getId();
         $cart->source = 'Magento';
