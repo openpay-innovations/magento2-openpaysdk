@@ -53,7 +53,7 @@ class Shopsystem
         $integerTotal = round((float)$cart->getGrandTotal(), 2);
         $cart->integerTotal = (int)($integerTotal * 100);
 
-        $cart->deliveryAddress = $cart->getShippingAddress()->getData();
+        $deliveryAddress = $cart->getShippingAddress()->getData();
         $cart->invoiceAddress = $cart->getBillingAddress()->getData();
         if ($deliveryAddress['street'] == null && 
             $deliveryAddress['city'] == null &&
@@ -88,7 +88,7 @@ class Shopsystem
         }
 
         // Get shipping address and billing address different or not
-        $billingAddress = array_diff($cart->invoiceAddress, $cart->deliveryAddress);
+        $billingAddress = array_diff($cart->invoiceAddress, $deliveryAddress);
         if (array_key_exists('firstname', $billingAddress) && array_key_exists('lastname', $billingAddress)) {
             $cart->deliveryAddress['firstname'] = $billingAddress['firstname'];
             $cart->deliveryAddress['lastname'] = $billingAddress['lastname'];
