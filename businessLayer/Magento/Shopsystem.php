@@ -116,14 +116,7 @@ class Shopsystem
         $cart->isoCurrency = $currency;
         $cart->cartId = $cart->getId();
         $cart->source = 'Magento';
-        
-        if (!empty($cart->deliveryAddress['region'])) {
-            $regionDelivery = $objectManager->create('Magento\Directory\Model\ResourceModel\Region\Collection')
-                ->addRegionNameFilter($cart->deliveryAddress['region'])
-                ->getFirstItem()
-                ->toArray();
-            $cart->deliveryAddress['regioncode'] = (isset($regionDelivery['code'])) ? $regionDelivery['code'] : $cart->deliveryAddress['region'];
-        }
+
         if (!empty($cart->invoiceAddress['region'])) {
             $regionInvoice = $objectManager->create('Magento\Directory\Model\ResourceModel\Region\Collection')
                 ->addRegionNameFilter($cart->invoiceAddress['region'])
@@ -139,14 +132,6 @@ class Shopsystem
             $linesInvoice2 .= ' ' . $linesInvoice[2];
         }
         $cart->invoiceAddress['line2'] = $linesInvoice2;
-        
-        $linesDelivery = explode("\n", $cart->deliveryAddress['street']);
-        $cart->deliveryAddress['line1'] = $linesDelivery[0];
-        $linesDelivery2 = (isset($linesDelivery[1])) ? $linesDelivery[1] : '';
-        if (isset($linesDelivery[2])) {
-            $linesDelivery2 .= ' ' . $linesDelivery[2];
-        }
-        $cart->deliveryAddress['line2'] = $linesDelivery2;
         
         return $cart;
     }
