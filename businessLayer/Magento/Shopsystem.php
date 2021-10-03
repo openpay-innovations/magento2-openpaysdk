@@ -51,10 +51,10 @@ class Shopsystem
 
         $cart->total = $cart->getGrandTotal();
         $integerTotal = round((float)$cart->getGrandTotal(), 2);
-        $cart->integerTotal = (int)($integerTotal * 100);
-
-        $deliveryAddress = $cart->getShippingAddress()->getData();
+        $cart->integerTotal = ($integerTotal * 100);
+        $cart->deliveryAddress = $cart->getShippingAddress()->getData();
         $cart->invoiceAddress = $cart->getBillingAddress()->getData();
+      
         if ($deliveryAddress['street'] == null && 
             $deliveryAddress['city'] == null &&
             $deliveryAddress['region'] == null &&
