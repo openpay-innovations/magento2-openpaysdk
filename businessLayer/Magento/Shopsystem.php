@@ -51,13 +51,44 @@ class Shopsystem
 
         $cart->total = $cart->getGrandTotal();
         $integerTotal = round((float)$cart->getGrandTotal(), 2);
-        $cart->integerTotal = (int)($integerTotal * 100);
+        $cart->integerTotal = ($integerTotal * 100);
 
-        $cart->deliveryAddress = $cart->getShippingAddress()->getData();
+        $deliveryAddress = $cart->getShippingAddress()->getData();
         $cart->invoiceAddress = $cart->getBillingAddress()->getData();
+        if ($deliveryAddress['street'] == null && 
+            $deliveryAddress['city'] == null &&
+            $deliveryAddress['region'] == null &&
+            $deliveryAddress['postcode'] == null
+        ) {
+            $cart->deliveryMethod = 'Email';
+        } else {
+            $cart->deliveryAddress = $deliveryAddress;
+            $deliveryAddress['city'] = empty($deliveryAddress['city']) ? '-' : $deliveryAddress['city'];
+            $deliveryAddress['postcode'] = empty($deliveryAddress['postcode']) ? '-' : $deliveryAddress['postcode'];
+            if (!empty($cart->deliveryAddress['region'])) {
+                $regionDelivery = $objectManager->create('Magento\Directory\Model\ResourceModel\Region\Collection')
+                    ->addRegionNameFilter($cart->deliveryAddress['region'])
+                    ->getFirstItem()
+                    ->toArray();
+                $cart->deliveryAddress['regioncode'] = (isset($regionDelivery['code'])) ? $regionDelivery['code'] : $cart->deliveryAddress['region'];
+            } else {
+                $cart->deliveryAddress['regioncode'] = '-';
+            }
+            if (!empty($cart->deliveryAddress['street'])) {
+                $linesDelivery = explode("\n", $cart->deliveryAddress['street']);
+                $cart->deliveryAddress['line1'] = $linesDelivery[0];
+                $linesDelivery2 = (isset($linesDelivery[1])) ? $linesDelivery[1] : '';
+                if (isset($linesDelivery[2])) {
+                    $linesDelivery2 .= ' ' . $linesDelivery[2];
+                }
+                $cart->deliveryAddress['line2'] = $linesDelivery2;
+            } else {
+                $cart->deliveryAddress['line1'] = '-';
+            }
+        }
 
         // Get shipping address and billing address different or not
-        $billingAddress = array_diff($cart->invoiceAddress, $cart->deliveryAddress);
+        $billingAddress = array_diff($cart->invoiceAddress, $deliveryAddress);
         if (array_key_exists('firstname', $billingAddress) && array_key_exists('lastname', $billingAddress)) {
             $cart->deliveryAddress['firstname'] = $billingAddress['firstname'];
             $cart->deliveryAddress['lastname'] = $billingAddress['lastname'];
@@ -85,14 +116,7 @@ class Shopsystem
         $cart->isoCurrency = $currency;
         $cart->cartId = $cart->getId();
         $cart->source = 'Magento';
-        
-        if (!empty($cart->deliveryAddress['region'])) {
-            $regionDelivery = $objectManager->create('Magento\Directory\Model\ResourceModel\Region\Collection')
-                ->addRegionNameFilter($cart->deliveryAddress['region'])
-                ->getFirstItem()
-                ->toArray();
-            $cart->deliveryAddress['regioncode'] = (isset($regionDelivery['code'])) ? $regionDelivery['code'] : $cart->deliveryAddress['region'];
-        }
+
         if (!empty($cart->invoiceAddress['region'])) {
             $regionInvoice = $objectManager->create('Magento\Directory\Model\ResourceModel\Region\Collection')
                 ->addRegionNameFilter($cart->invoiceAddress['region'])
@@ -108,14 +132,6 @@ class Shopsystem
             $linesInvoice2 .= ' ' . $linesInvoice[2];
         }
         $cart->invoiceAddress['line2'] = $linesInvoice2;
-        
-        $linesDelivery = explode("\n", $cart->deliveryAddress['street']);
-        $cart->deliveryAddress['line1'] = $linesDelivery[0];
-        $linesDelivery2 = (isset($linesDelivery[1])) ? $linesDelivery[1] : '';
-        if (isset($linesDelivery[2])) {
-            $linesDelivery2 .= ' ' . $linesDelivery[2];
-        }
-        $cart->deliveryAddress['line2'] = $linesDelivery2;
         
         return $cart;
     }
