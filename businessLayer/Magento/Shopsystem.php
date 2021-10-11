@@ -55,6 +55,28 @@ class Shopsystem
 
         $deliveryAddress = $cart->getShippingAddress()->getData();
         $cart->invoiceAddress = $cart->getBillingAddress()->getData();
+        
+        /**
+         * This code is for onestepcheckout (START)
+         */
+        $request = $objectManager->get('Magento\Framework\App\RequestInterface');
+        $moduleManager = $objectManager->get('Magento\Framework\Module\Manager');
+        $isOnestepInstalled = $moduleManager->isEnabled('Onestepcheckout_Iosc');
+        if ($isOnestepInstalled) {
+            $dataManager = $objectManager->get('Onestepcheckout\Iosc\Model\DataManager');
+            $content = $request->getContent();
+            $payload = $dataManager->deserializeJsonPost($content);
+            $data = $dataManager->process($payload);
+            if ($data && !$data['error']) {
+                if (!$data['data']['billingAddress']) {
+                    $cart->invoiceAddress =$data['data']['shippingAddress'];
+                } else {
+                    $cart->invoiceAddress =$data['data']['billingAddress'];
+                }
+            }
+        }
+        /** (END) */
+
         if ($deliveryAddress['street'] == null && 
             $deliveryAddress['city'] == null &&
             $deliveryAddress['region'] == null &&
@@ -94,25 +116,6 @@ class Shopsystem
             $cart->deliveryAddress['lastname'] = $billingAddress['lastname'];
         }
 
-        /**
-         * This code is for onestepcheckout (START)
-         */
-        $request = $objectManager->get('Magento\Framework\App\RequestInterface');
-        $moduleManager = $objectManager->get('Magento\Framework\Module\Manager');
-        $isOnestepInstalled = $moduleManager->isEnabled('Onestepcheckout_Iosc');
-        if ($isOnestepInstalled) {
-            $dataManager = $objectManager->get('Onestepcheckout\Iosc\Model\DataManager');
-            $content = $request->getContent();
-            $payload = $dataManager->deserializeJsonPost($content);
-            $data = $dataManager->process($payload);
-            if ($data && !$data['error']) {
-                if (!$data['data']['billingAddress']) {
-                    $cart->invoiceAddress =$data['data']['shippingAddress'];
-                }
-            }
-        }
-        /** (END) */
-
         $cart->isoCurrency = $currency;
         $cart->cartId = $cart->getId();
         $cart->source = 'Magento';
@@ -132,7 +135,7 @@ class Shopsystem
             $linesInvoice2 .= ' ' . $linesInvoice[2];
         }
         $cart->invoiceAddress['line2'] = $linesInvoice2;
-        
+
         return $cart;
     }
 }
