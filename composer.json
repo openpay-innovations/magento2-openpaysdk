@@ -20,10 +20,10 @@
         "ext-curl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "guzzlehttp/guzzle": "^6.2"
+        "guzzlehttp/guzzle": ">=6.2"
     },
     "autoload": {
-        "psr-4": { 
+        "psr-4": {
             "Openpay\\Client\\" : "lib/",
             "BusinessLayer\\Openpay\\" : "businessLayer/"
         }
