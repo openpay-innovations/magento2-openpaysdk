@@ -55,6 +55,15 @@ class Shopsystem
 
         $deliveryAddress = $cart->getShippingAddress()->getData();
         $cart->invoiceAddress = $cart->getBillingAddress()->getData();
+
+        // Pickup method fix
+        if ( isset($deliveryAddress["shipping_method"]) && ($deliveryAddress["shipping_method"] == "instore_pickup") ) 
+        {
+            if ($deliveryAddress["extension_attributes"])
+                unset($deliveryAddress["extension_attributes"]);
+            
+            $cart->deliveryMethod = 'Pickup';
+        }
         
         /**
          * This code is for onestepcheckout (START)
