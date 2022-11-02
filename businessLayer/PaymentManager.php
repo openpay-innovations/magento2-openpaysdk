@@ -244,7 +244,7 @@ class PaymentManager
      */
     public function getPaymentPage($paymentmethod, $jsIsUsed, $requestmethod = null)
     {
-        $this->setRedirectUrlInShopdata();
+        //$this->setRedirectUrlInShopdata();
         if (in_array($paymentmethod, $this->features)) {
             $paymentpage = new PaymentPage();
             $paymentpage->createPaymentPage(
@@ -489,14 +489,14 @@ class PaymentManager
         $this->apiHost = $apiHost;
     }
 
-    private function setRedirectUrlInShopdata()
-    {
-        $region = $this->shopData->backofficeConfigparam['region'];
-        if ($this->shopData->backofficeConfigparam['payment_mode'] == 'live') {
-            $url = INIController::fetchKey(Constants::CONFIG_FILE, 'HandoverUrl', 'liveurl' . $region);
-        } else {
-            $url = INIController::fetchKey(Constants::CONFIG_FILE, 'HandoverUrl', 'testurl' . $region);
-        }
-        $this->shopData->backofficeConfigparam['handover_url'] = ($url) ? $url : null;
-    }
+    // private function setRedirectUrlInShopdata()
+    // {
+    //     $region = $this->shopData->backofficeConfigparam['region'];
+    //     if ($this->shopData->backofficeConfigparam['payment_mode'] == 'live') {
+    //         $url = INIController::fetchKey(Constants::CONFIG_FILE, 'HandoverUrl', 'liveurl' . $region);
+    //     } else {
+    //         $url = INIController::fetchKey(Constants::CONFIG_FILE, 'HandoverUrl', 'testurl' . $region);
+    //     }
+    //     $this->shopData->backofficeConfigparam['handover_url'] = ($url) ? $url : null;
+    // }
 }
