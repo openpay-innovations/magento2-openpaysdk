@@ -32,6 +32,13 @@ class Shopsystem
 
         if ($cart->getCustomer()->getId()) {
             $cart->custom = $customer->load($cart->getCustomer()->getId())->getData();
+            // remove password hash and password reset token if available
+            if (isset($cart->custom['password_hash'])) {
+                unset($cart->custom['password_hash']);
+            }
+            if (isset($cart->custom['rp_token'])) {
+                unset($cart->custom['rp_token']);
+            }
             if ($cart->custom['gender']) {
                 if ($cart->custom['gender'] == '1') {
                     $cart->gender = 'M';
